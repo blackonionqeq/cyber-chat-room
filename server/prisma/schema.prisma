@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_MYSQL_URL")
+}
+
+
+model User {
+  id         String   @id @default(uuid())
+  username   String   @unique @db.VarChar(50)
+  password   String   @db.VarChar(50)
+  nickname   String   @db.VarChar(30)
+  email      String   @db.VarChar(50)
+  avater     String   @default("") @db.VarChar(100)
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+
+}
+
+model FriendShip {
+  id Int @id @default(autoincrement())
+
+  fromId String
+  toId   String
+
+  status Boolean @default(false) // 是否应用，例如成为好友后删除，会变成false
+}
+
+model FriendRequest {
+  id         Int                 @id @default(autoincrement())
+  fromId     String
+  toId       String
+  reason     String              @default("") @db.VarChar(100)
+  status     FriendRequestStatus @default(PENDING)
+  createTime DateTime            @default(now())
+  updateTime DateTime            @updatedAt
+}
+
+enum FriendRequestStatus {
+  PENDING // 申请中
+  REJECTED // 已拒绝
+  APPROVED // 已通过
+}
+
+model ChatRoom {
+  id         String   @id @default(uuid())
+  name String @db.VarChar(50) @default("")
+  groupChat Boolean @default(false)
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+}
+
+model UserChatRoom {
+  userId String
+  userId2 String @default("") // 用于从俩用户反向查chatroom
+  roomId String
+  @@index([userId])
+  @@id([userId, roomId])
+}

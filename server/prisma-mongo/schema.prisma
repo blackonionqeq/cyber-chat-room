@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/mongo-client"
+}
+
+datasource mongo {
+  provider = "mongodb"
+  url      = env("DATABASE_MONGO_URL")
+}
+
+model ChatContent {
+  id      String          @id @default(auto()) @map("_id") @mongo.ObjectId
+  roomId  String // 对应mysql的chatroom表的id
+  userId  String // 对应mysql的user表的id
+  content String
+  type    ChatContentType
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+}
+
+enum ChatContentType {
+  TEXT
+  IMAGE
+  FILE
+  OTHER
+}
