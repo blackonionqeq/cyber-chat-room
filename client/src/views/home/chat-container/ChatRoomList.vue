@@ -1,5 +1,5 @@
 <template>
-	<ul class="flex flex-col overflow-y-auto overflow-x-hidden">
+	<ul class="flex flex-col overflow-y-auto overflow-x-hidden h-full">
 		<div v-if="!chatRoomList" class="flex-1 w-full">加载中</div>
 		<div v-else class="flex-1 w-full">
 			<li v-for="item of chatRoomList" :key="item.id" class="leading-loose my-1" :class="{

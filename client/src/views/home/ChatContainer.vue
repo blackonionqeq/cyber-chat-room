@@ -1,12 +1,12 @@
 <template>
-	<div class="flex">
+	<div class="flex h-full">
 		<div class="w-50 flex">
 			<div v-if="!chatRoomList" class="flex-1 h-dvh flex items-center justify-center">加载中</div>
 			<ChatRoomList v-else :chat-room-list="chatRoomList" :current-room-id="roomId" @select-room-id="selectRoomById"></ChatRoomList>
 		</div>
 
 		<section class="flex-1 flex flex-col">
-			<div v-if="!roomId" class="flex-1 w-dvw h-dvh items-center justify-center">请选择一个聊天室</div>
+			<div v-if="!roomId" class="flex-1 w-full h-dvh items-center justify-center">请选择一个聊天室</div>
 			<ChatRoom v-else :room-id="roomId"></ChatRoom>
 		</section>
 	</div>

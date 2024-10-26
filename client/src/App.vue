@@ -8,7 +8,7 @@ async function testMessage() {
 </script>
 
 <template>
-  <div class="text-amber">
+  <!-- <div class="text-amber"> -->
     <!-- THIS is Vite + Vue!
     <NButton @click="testMessage">test message</NButton> -->
     <!-- <div class="flex-col flex">
@@ -16,10 +16,10 @@ async function testMessage() {
       <RouterLink to="/register">to register</RouterLink>
       <RouterLink to="/login">to login</RouterLink>
     </div> -->
-    <div class="flex justify-center items-center">
+    <div class="flex justify-center items-center h-dvh overflow-hidden">
       <RouterView></RouterView>
     </div>
-  </div>
+  <!-- </div> -->
 </template>
 
 <style scoped>

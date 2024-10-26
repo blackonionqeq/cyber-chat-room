@@ -1,0 +1,25 @@
+services:
+  mongo1:
+    image: mongo:latest
+    container_name: mongo1
+    command: ["mongod", "--replSet", "rs0"]
+    volumes:
+      - E:\docker-mount\mongo-rs0\db1:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      - mongo-net
+  
+  mongo2:
+    image: mongo:latest
+    container_name: mongo2
+    command: ["mongod", "--replSet", "rs0"]
+    volumes:
+      - E:\docker-mount\mongo-rs0\db2:/data/db
+    ports:
+      - 27018:27017
+    networks:
+      - mongo-net
+networks:
+  mongo-net:
+    driver: bridge

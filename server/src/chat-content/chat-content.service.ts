@@ -10,7 +10,7 @@ export class ChatContentService {
 	async list(roomId: string) {
 		return await this.prismaMongoService.chatContent.findMany({
 			where: { roomId },
-			orderBy: { updateTime: 'desc' }
+			orderBy: { updateTime: 'asc' }
 		})
 	}
 

@@ -1,9 +1,9 @@
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { ChatService } from './chat.service';
 import { Server, Socket } from 'socket.io';
-import { Observable } from 'rxjs';
+// import { Observable } from 'rxjs';
 
-@WebSocketGateway({ cors: { origin: "" } })
+@WebSocketGateway({ cors: { origin: "*" } })
 export class ChatGateway {
   @WebSocketServer()
   private server: Server
@@ -11,15 +11,14 @@ export class ChatGateway {
   constructor(private readonly chatService: ChatService) {}
 
   @SubscribeMessage('join')
-  join(client: Socket, payload: { roomId: string, userId: string }) {
-    return new Observable(observer => {
-      this.chatService.join(payload.roomId, client).then((roomName) => {
-        this.server.to(roomName).emit('message', {
-          type: 'join',
-          userId: payload.userId,
-        })
-        observer.complete()
-      })
+  join(client: Socket, {roomId, userId}: { roomId: string, userId: string }) {
+    // this.chatService.join(roomId)
+    roomId = roomId.toString()
+    client.join(roomId)
+    
+    this.server.to(roomId).emit('message', {
+      type: 'join',
+      userId: userId,
     })
   }
 
@@ -32,7 +31,8 @@ export class ChatGateway {
       content: string
     }
   }) {
-    this.chatService.roomService.getRoomInfo(payload.roomId).then(({ name }) => {
+    // this.chatService.roomService.getRoomInfo(payload.roomId).then(({ name }) => {
+      payload.roomId = payload.roomId.toString()
       
       this.chatService.addContent(payload.roomId, {
         userId: payload.userId,
@@ -40,12 +40,13 @@ export class ChatGateway {
         content: payload.message.content,
       })
 
-      this.server.to(name).emit('message', {
+      this.server.to(payload.roomId).emit('message', {
         type: 'sendMessage',
         userId: payload.userId,
         message: payload.message,
+        updateTime: new Date(),
       })
 
-    })
+    // })
   }
 }

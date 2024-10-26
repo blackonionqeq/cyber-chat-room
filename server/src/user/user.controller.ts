@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query,  } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req,  } from '@nestjs/common';
 import { UserService } from './user.service';
 // import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RequireLogin } from 'src/utils/decorator';
+import { Request } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -33,14 +34,21 @@ export class UserController {
 
   @Get(':id')
   async getUserInfo(@Param('id') id: string) {
-    return await this.userService.findOne(id)
+    return await this.userService.findOne(
+      id
+    )
+  }
+  @Get('')
+  @RequireLogin()
+  async getSelfInfo(@Req() req: Request) {
+    return await this.userService.findOne(req.user.id)
   }
 
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.userService.findAll();
+  // }
 
 
   @Patch(':id')

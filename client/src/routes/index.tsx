@@ -3,10 +3,7 @@ import { createRouter, createWebHistory, RouteRecordRaw, RouterView } from "vue-
 const routes: RouteRecordRaw[] = [
 	{
 		path: '/',
-		component: <div>
-			<div>子路由</div>
-			<RouterView></RouterView>
-		</div>,
+		component: <RouterView></RouterView>,
 		children: [
 			{
 				path: '',
@@ -16,6 +13,11 @@ const routes: RouteRecordRaw[] = [
 				path: 'home',
 				component: () => import('../views/home.vue'),
 				children: [
+					{
+						path: '',
+						component: () => import('../views/home/ChatContainer.vue'),
+						props: false
+					},
 					{
 						path: ':roomId',
 						component: () => import('../views/home/ChatContainer.vue'),

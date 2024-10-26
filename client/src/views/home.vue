@@ -1,5 +1,5 @@
 <template>
-	<section class="flex">
+	<section class="flex flex-1 h-full">
 		<nav class="flex flex-col">
 			<RouterLink to="/home">
 				<NButton>聊天</NButton>

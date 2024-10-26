@@ -18,6 +18,7 @@
 <script lang='ts' setup>
 import api from '@/api';
 import { useTokenInstance } from '@/composables/useToken';
+import { useUserInfoInstance } from '@/composables/useUserInfo';
 import { Token } from '@/token';
 import { NForm, NFormItem, NInput, NButton } from 'naive-ui';
 import type { FormInst } from 'naive-ui';
@@ -51,8 +52,8 @@ async function handleLogin() {
 	})
 	useTokenInstance.set(res)
 	localStorage.setItem('refreshToken', res.refreshToken)
+	useUserInfoInstance.update()
 	if (route.query.redirect && typeof route.query.redirect === 'string') {
-		debugger
 		router.push(route.query.redirect)
 	} else {
 		router.push('/')
