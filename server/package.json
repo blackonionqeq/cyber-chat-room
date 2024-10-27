@@ -17,7 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "mongo-rs:docker-up": "docker compose -f ./docker/docker-compose.mongo.yaml -p mongo-set up -d",
+    "mongo-rs:db-push": "pnpm prisma db push --schema=prisma-mongo/schema.prisma"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

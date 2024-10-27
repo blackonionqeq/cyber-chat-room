@@ -38,14 +38,16 @@ export class ChatGateway {
         userId: payload.userId,
         type: payload.message.type,
         content: payload.message.content,
+      }).then(content => {
+
+        this.server.to(payload.roomId).emit('message', {
+          type: 'sendMessage',
+          userId: payload.userId,
+          message: payload.message,
+          updateTime: content.updateTime,
+        })
       })
 
-      this.server.to(payload.roomId).emit('message', {
-        type: 'sendMessage',
-        userId: payload.userId,
-        message: payload.message,
-        updateTime: new Date(),
-      })
 
     // })
   }

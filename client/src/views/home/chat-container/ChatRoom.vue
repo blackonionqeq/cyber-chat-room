@@ -30,10 +30,16 @@ import { message } from '@/composables/useDiscreteApi';
 import { useUserInfoInstance } from '@/composables/useUserInfo';
 import { UserInfo } from '@/types/user';
 import { randomStr } from '@/utils/random';
+import localforage from 'localforage';
 import { NInput, NButton, NScrollbar } from 'naive-ui';
 import { io, Socket } from 'socket.io-client';
-import { nextTick, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
 
+
+// localforage.setDriver(localforage.INDEXEDDB)
+// localforage.getDriver()
+// const driver = await useLocalForageInstance.getDriver()
+const driver = localforage
 
 const inputValue = ref('')
 
@@ -66,6 +72,12 @@ const chatContentList = ref<null|ChatContentItem[]>(null)
 
 let socket: Socket | null = null
 
+const roomIdCachedKey = computed(() => `room_${props.roomId}_last_update`, {})
+// 主缓存key
+const roomContentCachedKey = computed(() => `room_${props.roomId}_main`)
+// 临时缓存，用于记录聊天时追加的内容
+const roomContentCachedKeyTemp = computed(() => `room_${props.roomId}_temp`)
+
 async function handleReceiveMessage(data: {
 	userId: string,
 	message: {
@@ -75,16 +87,27 @@ async function handleReceiveMessage(data: {
 	dateTime: string,
 	updateTime: string,
 }) {
+	// @ts-ignore
+	if (data.type === 'join') return
 	if (!chatContentList.value) {
 		chatContentList.value = []
 	}
 	const shouldScroll = checkIsAtBottom()
-	chatContentList.value.push({
+	const newContent = {
 		userId: data.userId,
 		content: data.message.content,
 		id: randomStr(),
 		type: ChatContentType.TEXT,
 		updateTime: data.updateTime,
+	}
+	chatContentList.value.push(newContent)
+	driver.setItem(roomIdCachedKey.value, data.updateTime)
+	driver.getItem(roomContentCachedKeyTemp.value).then((data:any) => {
+		nextTick().then(() => {
+			if (!data) data = []
+			data.push(newContent)
+			driver.setItem(roomContentCachedKeyTemp.value, data)
+		})
 	})
 	if (shouldScroll) {
 		await nextTick()
@@ -109,6 +132,7 @@ watch(() => props.roomId, async (newRoomId, oldRoomId) => {
 			socket!.emit('join', { userId: userInfo.id, roomId: newRoomId })
 			socket!.on('message', handleReceiveMessage)
 		})
+		await nextTick()
 		// 获取聊天记录
 		getChatContentList()
 	}
@@ -135,9 +159,31 @@ async function sendMessage(value: string) {
 }
 
 async function getChatContentList() {
-	const res = await api.get<any, ChatContentItem[]>(`/chat-content/list/${props.roomId}`)
-	// res.forEach(item => handleReceiveMessage(item))
-	chatContentList.value = [...res]
+	const date = await driver.getItem(roomIdCachedKey.value) as string|undefined
+	if (!date) {
+		const res = await api.get<any, ChatContentItem[]>(`/chat-content/list/${props.roomId}`)
+		chatContentList.value = [...res]
+		if (res.length) {
+			driver.setItem(roomIdCachedKey.value, res.at(-1)?.updateTime)
+			nextTick().then(() => {
+				driver.setItem(roomContentCachedKey.value, res)
+			})
+		}
+	} else {
+		const res = await api.get<any, ChatContentItem[]>(`/chat-content/list-after-date-time`, {
+			params: { dateTime: date, roomId: props.roomId }
+		})
+		if (!chatContentList.value) {
+			chatContentList.value = []
+		}
+		const mainCache = await driver.getItem(roomContentCachedKey.value) as any[] ?? []
+		const tempCeche = await driver.getItem(roomContentCachedKeyTemp.value)as any[] ?? []
+		const cache = mainCache.concat(tempCeche).concat(res)
+		chatContentList.value = cache
+		driver.setItem(roomContentCachedKey.value, cache)
+		driver.setItem(roomIdCachedKey.value, cache.at(-1)?.updateTime)
+		driver.removeItem(roomContentCachedKeyTemp.value)
+	}
 }
 
 const scrollWrapper = ref<InstanceType<typeof NScrollbar>>()

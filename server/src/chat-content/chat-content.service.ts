@@ -14,6 +14,22 @@ export class ChatContentService {
 		})
 	}
 
+	async listAfterDateTime(roomId: string, dateTime: string) {
+		return await this.prismaMongoService.chatContent.findMany({
+			where: {
+				updateTime: { gt: dateTime }, roomId,
+			},
+			orderBy: { updateTime: 'asc' }
+		})
+	}
+	async countAfterDateTime(roomId: string, dateTime: string) {
+		return await this.prismaMongoService.chatContent.count({
+			where: {
+				updateTime: { gt: dateTime }, roomId,
+			},
+		})
+	}
+
 	async add(roomId: string, content: Pick<ChatContent, 'userId'|'type'|'content'>) {
 		return await this.prismaMongoService.chatContent.create({
 			data: { ...content, roomId }
