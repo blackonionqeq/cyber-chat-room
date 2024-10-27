@@ -26,6 +26,9 @@ importers:
       socket.io-client:
         specifier: ^4.8.1
         version: 4.8.1
+      throttle-debounce:
+        specifier: ^5.0.2
+        version: 5.0.2
       vue:
         specifier: ^3.5.12
         version: 3.5.12(typescript@5.6.3)
@@ -36,6 +39,9 @@ importers:
       '@types/node':
         specifier: ^22.7.9
         version: 22.7.9
+      '@types/throttle-debounce':
+        specifier: ^5.0.2
+        version: 5.0.2
       '@vitejs/plugin-vue':
         specifier: ^5.1.4
         version: 5.1.4(vite@5.4.10(@types/node@22.7.9))(vue@3.5.12(typescript@5.6.3))
@@ -619,6 +625,9 @@ packages:
 
   '@types/node@22.7.9':
     resolution: {integrity: sha512-jrTfRC7FM6nChvU7X2KqcrgquofrWLFDeYC1hKfwNWomVvrn7JIksqf344WN2X/y8xrgqBd2dJATZV4GbatBfg==}
+
+  '@types/throttle-debounce@5.0.2':
+    resolution: {integrity: sha512-pDzSNulqooSKvSNcksnV72nk8p7gRqN8As71Sp28nov1IgmPKWbOEIwAWvBME5pPTtaXJAvG3O4oc76HlQ4kqQ==}
 
   '@unocss/astro@0.63.6':
     resolution: {integrity: sha512-5Fjlv6dpQo6o2PUAcEv8p24G8rn8Op79xLFofq2V+iA/Q32G9/UsxTLOpj+yc+q0YdJrFfDCT2X/3pvVY8Db5g==}
@@ -1228,6 +1237,10 @@ packages:
   svg-tags@1.0.0:
     resolution: {integrity: sha512-ovssysQTa+luh7A5Weu3Rta6FJlFBBbInjOh722LIt6klpU2/HtdUbszju/G4devcvk8PGt7FCLv5wftu3THUA==}
 
+  throttle-debounce@5.0.2:
+    resolution: {integrity: sha512-B71/4oyj61iNH0KeCamLuE2rmKuTO5byTOSVwECM5FA7TiAiAW+UqTKZ9ERueC4qvgSttUhdmq1mXC3kJqGX7A==}
+    engines: {node: '>=12.22'}
+
   tinyexec@0.3.1:
     resolution: {integrity: sha512-WiCJLEECkO18gwqIp6+hJg0//p23HXp4S+gGtAKu3mI2F2/sXC4FvHvXvB0zJVVaTPhx1/tOwdbRsa1sOBIKqQ==}
 
@@ -1822,6 +1835,8 @@ snapshots:
   '@types/node@22.7.9':
     dependencies:
       undici-types: 6.19.8
+
+  '@types/throttle-debounce@5.0.2': {}
 
   '@unocss/astro@0.63.6(rollup@4.24.0)(typescript@5.6.3)(vite@5.4.10(@types/node@22.7.9))':
     dependencies:
@@ -2574,6 +2589,8 @@ snapshots:
       has-flag: 3.0.0
 
   svg-tags@1.0.0: {}
+
+  throttle-debounce@5.0.2: {}
 
   tinyexec@0.3.1: {}
 

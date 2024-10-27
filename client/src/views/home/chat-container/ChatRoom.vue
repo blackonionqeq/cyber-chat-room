@@ -8,12 +8,14 @@
 				<div class="flex-1 w-full" v-if="!chatContentList || !chatContentList.length">
 					暂无聊天
 				</div>
-				<NScrollbar class="absolute inset-0 overflow-y-auto overflow-x-hidden" v-else ref="scrollWrapper">
+				<NScrollbar class="absolute inset-0 overflow-y-auto overflow-x-hidden" v-else ref="scrollWrapper" @scroll="debouncedScroll">
 					<div v-for="chatContent of chatContentList" class="flex" :class="chatContent.userId === userInfo.id ? 'justify-end mr-2' : 'justify-start'">
 						<template v-if="chatContent.type === ChatContentType.TEXT">
 							<div >{{ chatContent.content }}</div>
 						</template>
 					</div>
+
+					<div class="absolute right-2 bottom-2 text-indigo px-4 py-2 bg-gray-6 rounded-10 cursor-pointer" v-show="showScroll2Bottom" @click="scroll">↓↓{{ unreadCount }}</div>
 				</NScrollbar>
 			</div>
 		</div>
@@ -34,6 +36,7 @@ import localforage from 'localforage';
 import { NInput, NButton, NScrollbar } from 'naive-ui';
 import { io, Socket } from 'socket.io-client';
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
+import {debounce} from 'throttle-debounce'
 
 
 // localforage.setDriver(localforage.INDEXEDDB)
@@ -112,6 +115,9 @@ async function handleReceiveMessage(data: {
 	if (shouldScroll) {
 		await nextTick()
 		scroll()
+	} else {
+		showScroll2Bottom.value = true
+		unreadCount.value++
 	}
 }
 
@@ -184,6 +190,9 @@ async function getChatContentList() {
 		driver.setItem(roomIdCachedKey.value, cache.at(-1)?.updateTime)
 		driver.removeItem(roomContentCachedKeyTemp.value)
 	}
+	await nextTick()
+	// 进入房间，默认会跳到最新消息（行为同qq微信）
+	scroll()
 }
 
 const scrollWrapper = ref<InstanceType<typeof NScrollbar>>()
@@ -194,6 +203,10 @@ function checkIsAtBottom() {
 	if (Math.abs(containerRef.clientHeight + containerRef.scrollTop - containerRef.scrollHeight) < 5) return true
 	return false
 }
+
+const emit = defineEmits<{
+	readAll: [roomId: string]
+}>()
 function scroll() {
 	if (scrollWrapper.value) {
 		const containerRef = scrollWrapper.value.scrollbarInstRef?.containerRef
@@ -203,6 +216,25 @@ function scroll() {
 			top: bottomDelta + 1,
 			behavior: 'smooth'
 		})
+		onScroll2Bottom()
 	}
 }
+function onScroll2Bottom() {
+	
+	showScroll2Bottom.value = false
+	unreadCount.value = 0
+
+	emit('readAll', props.roomId)
+}
+
+// 显示未读和支持滚动到底部的控件
+const showScroll2Bottom = ref(false)
+const unreadCount = ref(0)
+
+function handleScroll(e: Event) {
+	const container = e.target as HTMLDivElement
+	const delta = Math.abs(container.scrollTop + container.clientHeight - container.scrollHeight)
+	if (delta < 5) onScroll2Bottom()
+}
+const debouncedScroll = debounce(100, handleScroll, )
 </script>

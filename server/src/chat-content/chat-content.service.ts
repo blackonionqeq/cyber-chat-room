@@ -22,7 +22,12 @@ export class ChatContentService {
 			orderBy: { updateTime: 'asc' }
 		})
 	}
-	async countAfterDateTime(roomId: string, dateTime: string) {
+	async countAfterDateTime(roomId: string, dateTime?: string) {
+		if (!dateTime) {
+			return await this.prismaMongoService.chatContent.count({
+				where: { roomId }
+			})
+		}
 		return await this.prismaMongoService.chatContent.count({
 			where: {
 				updateTime: { gt: dateTime }, roomId,

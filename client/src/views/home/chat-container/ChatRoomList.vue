@@ -1,11 +1,13 @@
 <template>
-	<ul class="flex flex-col overflow-y-auto overflow-x-hidden h-full">
+	<ul class="flex flex-col overflow-y-auto overflow-x-hidden h-full w-full">
 		<div v-if="!chatRoomList" class="flex-1 w-full">加载中</div>
 		<div v-else class="flex-1 w-full">
 			<li v-for="item of chatRoomList" :key="item.id" class="leading-loose my-1" :class="{
 				'bg-blue': currentRoomId === item.id
 			}" @click="selectRoom(item)">
-				{{ item.name }}
+				<NBadge :value="item.unread === 0 ? undefined : item.unread">
+					{{ item.name }}
+				</NBadge>
 			</li>
 		</div>
 		<!-- <li></li> -->
@@ -13,11 +15,12 @@
 </template>
 
 <script lang="ts" setup>
+import { NBadge } from 'naive-ui';
 import type { ChatRoomItem } from '../ChatContainer.vue';
 
 defineProps({
 	chatRoomList: {
-		type: Array as () => ChatRoomItem[],
+		type: Array as () => (ChatRoomItem&{unread:number})[],
 		required: true
 	},
 	currentRoomId: String

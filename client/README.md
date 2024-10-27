@@ -1,5 +1,8 @@
-# Vue 3 + TypeScript + Vite
+## 备忘
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+### 功能
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+- 增量拉取聊天记录
+- 聊天时，若收到新消息时在底部，自动滚动
+- 聊天时，若收到新消息时不在底部，则显示一个控件，展示有几个新消息，点击控件会滚动到底部
+- 聊天对象栏增量显示未读信息数量的小红点
