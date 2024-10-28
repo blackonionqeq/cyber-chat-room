@@ -4,6 +4,7 @@ import App from './App.vue'
 import 'virtual:uno.css'
 import { router } from './routes'
 import 'normalize.css'
+import './styles/reset.css'
 
 const app = 
 createApp(App)

@@ -3,7 +3,7 @@
 		<div>
 			<NButton @click="viewType = 'find-friend'">添加好友</NButton>
 			<NBadge :value="invitationsCount">
-				<NButton @click="showInvitations">好友邀请</NButton>
+				<NButton @click="checkAndShowInvitations">好友邀请</NButton>
 			</NBadge>
 		</div>
 		<div v-for="friend of contacts" :key="friend.id" class="flex justify-around">
@@ -98,6 +98,14 @@ async function response(invitation: InvitationItem, type: InvitationResponseType
 	}
 	const idx = invitations.value!.findIndex(i => invitation.id === i.id)
 	invitations.value?.splice(idx, 1)
+}
+
+function checkAndShowInvitations() {
+	if (invitations.value?.length) {
+		showInvitations()
+	} else {
+		message.warning('暂时没有收到好友邀请')
+	}
 }
 
 </script>

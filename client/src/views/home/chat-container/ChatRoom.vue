@@ -9,7 +9,7 @@
 					暂无聊天
 				</div>
 				<NScrollbar class="absolute inset-0 overflow-y-auto overflow-x-hidden" v-else ref="scrollWrapper" @scroll="debouncedScroll">
-					<div v-for="chatContent of chatContentList" class="flex" :class="chatContent.userId === userInfo.id ? 'justify-end mr-2' : 'justify-start'">
+					<div v-for="chatContent of chatContentList" class="flex" :class="chatContent.userId === userInfo.id ? 'justify-end mr-2' : 'justify-start'" @contextmenu="e => {curItem = chatContent; showMenu(e)}">
 						<template v-if="chatContent.type === ChatContentType.TEXT">
 							<div >{{ chatContent.content }}</div>
 						</template>
@@ -19,10 +19,23 @@
 				</NScrollbar>
 			</div>
 		</div>
-		<div class="h-50 flex">
+		<div class="h-60 flex flex-col">
+			<NPopover trigger="click" scrollable class="w-100 max-h-50">
+				<template #trigger>
+					<div class="cursor-pointer">表情</div>
+				</template>
+				<div class="flex flex-wrap">
+					<div v-for="emoji of emojiList" :key="emoji">
+						<span class="size-5 cursor-pointer flex justify-center items-center" @click="addEmoji(emoji)">
+							{{ emoji }}
+						</span>
+					</div>
+				</div>
+			</NPopover>
 			<NInput type="textarea" placeholder="输入聊天内容后可按Enter键发送" v-model:value="inputValue" @keydown="e => e.keyCode === 13 && (e.preventDefault(), sendMessage(inputValue))"></NInput>
 			<NButton class="w-20" @click="sendMessage(inputValue)" type="primary">发送</NButton>
 		</div>
+		<NDropdown :show="showContextMenu" :x="x" :y="y" :on-clickoutside="clickMenuOutside" @select="selectMenu" trigger="manual" :options="menuOptions"></NDropdown>
 	</div>
 </template>
 
@@ -33,10 +46,11 @@ import { useUserInfoInstance } from '@/composables/useUserInfo';
 import { UserInfo } from '@/types/user';
 import { randomStr } from '@/utils/random';
 import localforage from 'localforage';
-import { NInput, NButton, NScrollbar } from 'naive-ui';
+import { NInput, NButton, NScrollbar, NPopover, NDropdown } from 'naive-ui';
 import { io, Socket } from 'socket.io-client';
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
 import {debounce} from 'throttle-debounce'
+import { emojiList } from '@/utils/emoji-list';
 
 
 // localforage.setDriver(localforage.INDEXEDDB)
@@ -82,6 +96,7 @@ const roomContentCachedKey = computed(() => `room_${props.roomId}_main`)
 const roomContentCachedKeyTemp = computed(() => `room_${props.roomId}_temp`)
 
 async function handleReceiveMessage(data: {
+	id: string
 	userId: string,
 	message: {
 		type: ChatContentType,
@@ -98,8 +113,8 @@ async function handleReceiveMessage(data: {
 	const shouldScroll = checkIsAtBottom()
 	const newContent = {
 		userId: data.userId,
-		content: data.message.content,
-		id: randomStr(),
+		content: (data.message.content),
+		id: data.id ?? randomStr(),
 		type: ChatContentType.TEXT,
 		updateTime: data.updateTime,
 	}
@@ -237,4 +252,37 @@ function handleScroll(e: Event) {
 	if (delta < 5) onScroll2Bottom()
 }
 const debouncedScroll = debounce(100, handleScroll, )
+
+function addEmoji(emoji: string) {
+	inputValue.value += emoji
+}
+
+
+// 右键相关
+const showContextMenu = ref(false)
+const x = ref(0)
+const y = ref(0)
+const curItem = ref<ChatContentItem>()
+function showMenu(e: MouseEvent) {
+	e.preventDefault()
+	showContextMenu.value = false
+	nextTick(() => {
+		x.value = e.clientX
+		y.value = e.clientY
+		showContextMenu.value = true
+	})
+}
+function clickMenuOutside() {
+	showContextMenu.value = false
+}
+const menuOptions = [
+	{ key: 'favorite', label: '收藏' }
+]
+async function selectMenu(key: string) {
+	if (key === menuOptions[0].key) {
+		// 调接口添加到收藏
+		await api.post(`/favorite/add/${curItem.value!.id}`)
+		message.success('收藏成功')
+	}
+}
 </script>

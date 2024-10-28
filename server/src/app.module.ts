@@ -13,6 +13,7 @@ import { ChatroomModule } from './chatroom/chatroom.module';
 import { ChatModule } from './chat/chat.module';
 import { PrismaMongoModule } from './prisma-mongo/prisma-mongo.module';
 import { ChatContentModule } from './chat-content/chat-content.module';
+import { FavoriteModule } from './favorite/favorite.module';
 
 @Module({
   imports: [PrismaModule, UserModule, RedisModule, EmailModule, JwtModule.registerAsync({
@@ -21,7 +22,7 @@ import { ChatContentModule } from './chat-content/chat-content.module';
       secret: 'shidi666',
       signOptions: { expiresIn: '30m' }
     })
-  }), FriendshipModule, ChatroomModule, ChatModule, PrismaMongoModule, ChatContentModule],
+  }), FriendshipModule, ChatroomModule, ChatModule, PrismaMongoModule, ChatContentModule, FavoriteModule],
   controllers: [AppController],
   providers: [
     AppService,

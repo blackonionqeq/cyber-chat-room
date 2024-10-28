@@ -60,7 +60,7 @@ watch(() => chatRoomList.value, async (newList, oldList) => {
 			if (count !==  chatRoomList.value![idx].unread) {
 				chatRoomList.value![idx].unread = count
 			}
-		}, 5000))
+		}, 5000 * 1000))
 	}
 })
 
@@ -70,7 +70,7 @@ onUnmounted(() => {
 
 const router = useRouter()
 function selectRoomById(roomId: string) {
-	if (roomId !== props.roomId) router.push(`/home/${roomId}`)
+	if (roomId !== props.roomId) router.push(`/home/room/${roomId}`)
 }
 
 function handleReadAll(roomId: string) {

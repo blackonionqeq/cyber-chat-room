@@ -14,18 +14,22 @@ const routes: RouteRecordRaw[] = [
 				component: () => import('../views/home.vue'),
 				children: [
 					{
-						path: '',
+						path: 'room',
 						component: () => import('../views/home/ChatContainer.vue'),
 						props: false
 					},
 					{
-						path: ':roomId',
+						path: 'room/:roomId',
 						component: () => import('../views/home/ChatContainer.vue'),
 						props: true
 					},
 					{
 						path: 'contacts',
 						component: () => import('../views/home/Contacts.vue'),
+					},
+					{
+						path: 'favorites',
+						component: () => import('../views/home/Favorites.vue'),
 					},
 				]
 			},

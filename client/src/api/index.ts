@@ -62,7 +62,8 @@ api.interceptors.response.use((res) => {
 })
 
 async function refreshToken() {
-	const refreshToken = useTokenInstance.get().refreshToken ?? localStorage.getItem('refreshToken')
+	const refreshToken = useTokenInstance.get().refreshToken 
+	?? localStorage.getItem('refreshToken')
 	if (!refreshToken) throw new Error('401:找不到refreshToken，请重新登录')
 	const data = await api.get<any, Token>(`/user/refresh/${refreshToken}`)
 	if (data) {

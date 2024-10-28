@@ -24,3 +24,13 @@ enum ChatContentType {
   FILE
   OTHER
 }
+
+model Favorite {
+  id String @id @map("_id") @mongo.ObjectId @default(auto())
+  chatContentId String
+  userId String
+  createTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+  snapshotType ChatContentType
+  snapshotContent String // 内容快照，为避免二次查询采用快照
+}

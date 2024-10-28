@@ -3,6 +3,7 @@ import type {UserInfo} from '@/types/user.d'
 
 export function useUserInfo() {
 	let userInfo: UserInfo
+	const userInfoList: UserInfo[] = []
 	async function get(force = false) {
 		if (force) {
 			if (!userInfo) return await update()
@@ -17,8 +18,18 @@ export function useUserInfo() {
 		}
 		return userInfo
 	}
+	async function getById(uid: string) {
+		const idx = userInfoList.findIndex(i => i.id === uid)
+		if (idx === -1) {
+			const info = await api.get<any, UserInfo>(`/user/${uid}`)
+			userInfoList.push(info)
+			return info
+		} else {
+			return userInfoList[idx]
+		}
+	}
 	return {
-		get, update
+		get, update, getById,
 	}
 }
 

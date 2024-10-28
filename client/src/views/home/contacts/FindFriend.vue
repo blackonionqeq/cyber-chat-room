@@ -1,7 +1,7 @@
 <template>
 	<div class="flex flex-col">
 		<div>寻找好友</div>
-		<div class="flex-col flex flex-1">
+		<div class="flex-col flex flex-1" v-if="strangers?.length">
 			<div v-for="user of strangers" class="flex justify-between">
 				<span>
 					用户名：{{ user.username }}
@@ -11,6 +11,9 @@
 				</span>
 				<NButton @click="handleRequest(user)">申请成为好友</NButton>
 			</div>
+		</div>
+		<div class="flex-1 leading-loose">
+			暂无可以邀请成为好友的陌生人，可以自己多注册一个账号
 		</div>
 	</div>
 </template>
