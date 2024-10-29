@@ -9,6 +9,10 @@ export class ChatContentController {
   async list(@Param('roomId') roomId: string) {
     return await this.chatContentService.list(roomId)
   }
+  @Get('latest/:roomId')
+  async latest(@Param('roomId') roomId: string) {
+    return await this.chatContentService.latest(roomId)
+  }
   @Get('list-after-date-time')
   async listAfterDateTime(@Query('roomId') roomId: string, @Query('dateTime') dateTime: string) {
     return await this.chatContentService.listAfterDateTime(roomId, dateTime)

@@ -18,15 +18,33 @@ export function useUserInfo() {
 		}
 		return userInfo
 	}
+	let queue: Record<string, Array<(value: UserInfo) => void>> = Object.create(null)
+	let isGetByIdWorking: Record<string, boolean> = Object.create(null)
 	async function getById(uid: string) {
+		if (!isGetByIdWorking[uid]) {
+			isGetByIdWorking[uid] = true
+		} else {
+			if (!queue[uid]) queue[uid] = []
+			return new Promise<UserInfo>((resolve) => {
+				queue[uid]!.push(resolve)
+			})
+		}
+		let res: UserInfo
 		const idx = userInfoList.findIndex(i => i.id === uid)
 		if (idx === -1) {
 			const info = await api.get<any, UserInfo>(`/user/${uid}`)
 			userInfoList.push(info)
-			return info
+			res = info
+
 		} else {
-			return userInfoList[idx]
+			res = userInfoList[idx]
 		}
+		if (queue[uid]?.length) {
+			queue[uid].forEach(resolve => resolve(res))
+			queue[uid] = []
+		}
+		isGetByIdWorking[uid] = false
+		return res
 	}
 	return {
 		get, update, getById,

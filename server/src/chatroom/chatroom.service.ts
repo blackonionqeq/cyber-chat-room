@@ -63,7 +63,10 @@ export class ChatroomService {
 					where: { roomId: roomInfo.id }
 				})
 				const friendId = userId === id ? userId2 : userId
-				roomInfo.name = (await this.prismaService.user.findUnique({ where: { id: friendId }, select: { username: true } })).username
+				const opposite = (await this.prismaService.user.findUnique({ where: { id: friendId }, select: { username: true, id: true } }))
+				roomInfo.name = opposite.username
+				// @ts-ignore
+				roomInfo.userId = opposite.id
 				return roomInfo
 			})
 		)

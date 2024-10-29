@@ -5,14 +5,15 @@
 		<div class="flex-1 flex flex-col">
 			<span>聊天记录</span>
 			<div class="flex-1 flex flex-col relative">
-				<div class="flex-1 w-full" v-if="!chatContentList || !chatContentList.length">
+				<div class="flex-1 w-full" v-if="!chatContentList.length">
 					暂无聊天
 				</div>
 				<NScrollbar class="absolute inset-0 overflow-y-auto overflow-x-hidden" v-else ref="scrollWrapper" @scroll="debouncedScroll">
-					<div v-for="chatContent of chatContentList" class="flex" :class="chatContent.userId === userInfo.id ? 'justify-end mr-2' : 'justify-start'" @contextmenu="e => {curItem = chatContent; showMenu(e)}">
-						<template v-if="chatContent.type === ChatContentType.TEXT">
-							<div >{{ chatContent.content }}</div>
-						</template>
+					<div v-for="item of chatContentList" class="flex items-start mt-2" :class="item.userId === userInfo.id ? 'justify-start mr-2 flex-row-reverse' : 'justify-start'" @contextmenu="e => {curItem = item; showMenu(e)}" :key="item.id">
+						<!-- <template v-if="item.type === ChatContentType.TEXT"> -->
+							<UserAvater :user-id="item.userId"></UserAvater>
+							<div class="bg-gray-4 px-3 py-1 rounded-lg mx-2 max-w-[70%]">{{ item.content }}</div>
+						<!-- </template> -->
 					</div>
 
 					<div class="absolute right-2 bottom-2 text-indigo px-4 py-2 bg-gray-6 rounded-10 cursor-pointer" v-show="showScroll2Bottom" @click="scroll">↓↓{{ unreadCount }}</div>
@@ -51,6 +52,8 @@ import { io, Socket } from 'socket.io-client';
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
 import {debounce} from 'throttle-debounce'
 import { emojiList } from '@/utils/emoji-list';
+import UserAvater from '@/components/UserAvater.vue';
+import { ChatContentItem, ChatContentType } from '@/types/chat.d';
 
 
 // localforage.setDriver(localforage.INDEXEDDB)
@@ -69,23 +72,7 @@ const props = defineProps({
 	}
 })
 
-enum ChatContentType {
-  TEXT = 'TEXT',
-  IMAGE = 'IMAGE',
-  FILE = 'FILE',
-  OTHER = 'OTHER',
-}
-
-type ChatContentItem = {
-	id:      String
-	// roomId:  String
-	userId:  String
-	content: String
-	type:    ChatContentType
-	// createTime: string
-	updateTime: string
-}
-const chatContentList = ref<null|ChatContentItem[]>(null)
+const chatContentList = ref<ChatContentItem[]>([])
 
 let socket: Socket | null = null
 
@@ -104,6 +91,8 @@ async function handleReceiveMessage(data: {
 	},
 	dateTime: string,
 	updateTime: string,
+	createTime: string,
+	roomId: string,
 }) {
 	// @ts-ignore
 	if (data.type === 'join') return
@@ -117,6 +106,8 @@ async function handleReceiveMessage(data: {
 		id: data.id ?? randomStr(),
 		type: ChatContentType.TEXT,
 		updateTime: data.updateTime,
+		createTime: data.createTime,
+		roomId: data.roomId,
 	}
 	chatContentList.value.push(newContent)
 	driver.setItem(roomIdCachedKey.value, data.updateTime)
@@ -134,6 +125,7 @@ async function handleReceiveMessage(data: {
 		showScroll2Bottom.value = true
 		unreadCount.value++
 	}
+	emit('newMessage', newContent)
 }
 
 watch(() => props.roomId, async (newRoomId, oldRoomId) => {
@@ -221,6 +213,7 @@ function checkIsAtBottom() {
 
 const emit = defineEmits<{
 	readAll: [roomId: string]
+	newMessage: [msg: ChatContentItem]
 }>()
 function scroll() {
 	if (scrollWrapper.value) {

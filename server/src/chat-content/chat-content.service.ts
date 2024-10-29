@@ -13,6 +13,14 @@ export class ChatContentService {
 			orderBy: { updateTime: 'asc' }
 		})
 	}
+	async latest(roomId: string) {
+		return await this.prismaMongoService.chatContent.findFirst({
+			where: {
+				roomId,
+			},
+			orderBy: { updateTime: 'desc' }
+		})
+	}
 
 	async listAfterDateTime(roomId: string, dateTime: string) {
 		return await this.prismaMongoService.chatContent.findMany({

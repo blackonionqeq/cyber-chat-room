@@ -45,6 +45,8 @@ export class ChatGateway {
           userId: payload.userId,
           message: payload.message,
           updateTime: content.updateTime,
+          createTime: content.createTime,
+          roomId: content.roomId,
           id: content.id,
         })
       })
