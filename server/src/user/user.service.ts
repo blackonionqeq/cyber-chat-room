@@ -35,7 +35,7 @@ export class UserService {
     if (targetUser) {
       throw new BadRequestException('用户已存在')
     }
-    return await this.prismaService.user.create({
+    const newUser = await this.prismaService.user.create({
       data: {
         username: data.username,
         password: md5(data.password),
@@ -44,6 +44,15 @@ export class UserService {
       } as Prisma.UserCreateInput,
       select: { id: true, createTime: true }
     })
+    
+		const userIdsKey = 'users_ids'
+    // 如果存在，说明需要用于判断好友和陌生人，所以存在时要更新对应数据 
+		this.redisService.exist(userIdsKey).then((exist) => {
+      if (exist) {
+        this.redisService.sAdd(userIdsKey, [newUser.id])
+      }
+    })
+    return newUser
   }
 
   async generateCaptchaAndSend(address: string, type = '注册') {

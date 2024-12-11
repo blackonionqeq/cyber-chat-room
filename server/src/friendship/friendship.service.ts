@@ -79,11 +79,24 @@ export class FriendshipService {
 				toId: id,
 				status: FriendRequestStatus.PENDING,
 			},
+			select: { fromId: true, reason: true, id: true, }
 		})
-		return invitations
+		return Promise.all(
+			invitations.map(async inv => {
+				const user = await this.prismaService.user.findUnique({
+					where: { id: inv.fromId },
+					select: { username: true, id: true, }
+				})
+				return {
+					username: user.username,
+					id: inv.id,
+					reason: inv.reason,
+				}
+			})
+		)
 	}
 
-	
+	// 返回id对应用户的好友并返回，返回前把用户好友id列表写进缓存
   async getFriendship(id: string) {
     const idSet = new Set<string>()
     const list = await this.prismaService.friendShip.findMany({
@@ -99,7 +112,8 @@ export class FriendshipService {
 		const idx = result.findIndex(i => i === id)
 		result.splice(idx, 1)
 		const key = `friends_${id}`
-		if (!(await this.redisService.exist(key))) {
+		// console.log(key, result)
+		if (result.length > 0 && !(await this.redisService.exist(key))) {
 			await this.redisService.sAdd(key, result)
 		}
     return result
@@ -110,15 +124,18 @@ export class FriendshipService {
 		if (!existUserIds) {
 			const userIds = (await this.prismaService.user.findMany()).map(i => i.id)
 			await this.redisService.sAdd(userIdsKey, userIds)
+			// console.log(userIds)
 		}
 		const userFriendIdsKey = `friends_${id}`
 		const existUserFriendIds = await this.redisService.exist(userFriendIdsKey)
 		if (!existUserFriendIds) {
 			await this.getFriendship(id)
+			// console.log(fs)
 		}
 		const userStrangersIdsKey = `strangers_${id}`
 		await this.redisService.sDiffStore(userStrangersIdsKey, userIdsKey, userFriendIdsKey)
 		const strangersIds = await this.redisService.sMembers(userStrangersIdsKey)
+		// console.log(strangersIds)
 		const idx = strangersIds.indexOf(id)
 		if (idx !== -1) strangersIds.splice(idx, 1)
 		return strangersIds
