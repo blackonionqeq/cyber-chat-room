@@ -12,9 +12,9 @@ export class RegisterUserDto {
 	@MinLength(6, { message: '密码不能少于6位' })
 	password: string
 
-	@IsNotEmpty({
-		message: '昵称不能为空'
-	})
+	// @IsNotEmpty({
+	// 	message: '昵称不能为空'
+	// })
 	nickname: string
 
 	@IsNotEmpty({
