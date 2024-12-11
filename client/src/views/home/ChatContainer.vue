@@ -6,15 +6,15 @@
 		</div>
 
 		<section class="flex-1 flex flex-col">
-			<div v-if="!roomId" class="flex-1 w-full h-dvh items-center justify-center">请选择一个聊天室</div>
-			<ChatRoom v-else :room-id="roomId" @read-all="handleReadAll(roomId)" @new-message="handleNewMessage"></ChatRoom>
+			<div v-if="!roomId" class="flex-1 w-full h-dvh items-center justify-center flex items-center justify-center">请选择一个聊天室</div>
+			<ChatRoom v-else :room-id="roomId" :room-name="roomName" :key="roomId" @read-all="handleReadAll(roomId)" @new-message="handleNewMessage"></ChatRoom>
 		</section>
 	</div>
 </template>
 
 <script lang="ts" setup>
 import api from '@/api';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import ChatRoomList from './chat-container/ChatRoomList.vue';
 import ChatRoom from './chat-container/ChatRoom.vue';
 import { useRouter } from 'vue-router';
@@ -88,6 +88,10 @@ const router = useRouter()
 function selectRoomById(roomId: string) {
 	if (roomId !== props.roomId) router.push(`/home/room/${roomId}`)
 }
+const roomName = computed(() => {
+	if (!chatRoomList.value?.length || !props.roomId) return ''
+	return chatRoomList.value.find(i => i.id === props.roomId)?.name
+})
 
 function handleReadAll(roomId: string) {
 	const idx = chatRoomList.value!.findIndex(i => i.id === roomId)

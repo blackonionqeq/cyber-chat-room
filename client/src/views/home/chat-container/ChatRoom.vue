@@ -1,15 +1,15 @@
 <template>
-	<div>这里是ChatRoom</div>
-	<div>房间号：{{ roomId }}</div>
+	<div class="ml-3 my-2">{{ roomName }}</div>
+	<!-- <div>房间号：{{ roomId }}</div> -->
 	<div class="flex flex-col h-full">
 		<div class="flex-1 flex flex-col">
-			<span>聊天记录</span>
+			<!-- <span>聊天记录</span> -->
 			<div class="flex-1 flex flex-col relative">
-				<div class="flex-1 w-full" v-if="!chatContentList.length">
+				<div class="ml-3 flex-1 w-full flex items-center justify-center" v-if="!chatContentList.length">
 					暂无聊天
 				</div>
 				<NScrollbar class="absolute inset-0 overflow-y-auto overflow-x-hidden" v-else ref="scrollWrapper" @scroll="debouncedScroll">
-					<div v-for="item of chatContentList" class="flex items-start mt-2" :class="item.userId === userInfo.id ? 'justify-start mr-2 flex-row-reverse' : 'justify-start'" @contextmenu="e => {curItem = item; showMenu(e)}" :key="item.id">
+					<div v-for="item of chatContentList" class="flex items-start mt-2 mx-3" :class="item.userId === userInfo.id ? 'justify-start mr-2 flex-row-reverse' : 'justify-start'" @contextmenu="e => {curItem = item; showMenu(e)}" :key="item.id">
 						<!-- <template v-if="item.type === ChatContentType.TEXT"> -->
 							<UserAvater :user-id="item.userId"></UserAvater>
 							<div class="bg-gray-4 px-3 py-1 rounded-lg mx-2 max-w-[70%]">{{ item.content }}</div>
@@ -20,10 +20,10 @@
 				</NScrollbar>
 			</div>
 		</div>
-		<div class="h-60 flex flex-col">
+		<div class="h-60 flex flex-col mx-4">
 			<NPopover trigger="click" scrollable class="w-100 max-h-50">
 				<template #trigger>
-					<div class="cursor-pointer">表情</div>
+					<div class="cursor-pointer w-10">表情</div>
 				</template>
 				<div class="flex flex-wrap">
 					<div v-for="emoji of emojiList" :key="emoji">
@@ -33,8 +33,8 @@
 					</div>
 				</div>
 			</NPopover>
-			<NInput type="textarea" placeholder="输入聊天内容后可按Enter键发送" v-model:value="inputValue" @keydown="e => e.keyCode === 13 && (e.preventDefault(), sendMessage(inputValue))"></NInput>
-			<NButton class="w-20" @click="sendMessage(inputValue)" type="primary">发送</NButton>
+			<NInput class="flex-1" type="textarea" placeholder="输入聊天内容后可按Enter键发送" v-model:value="inputValue" @keydown="e => e.keyCode === 13 && (e.preventDefault(), sendMessage(inputValue))"></NInput>
+			<NButton type="info" class="w-20 self-end my-3" @click="sendMessage(inputValue)">发送</NButton>
 		</div>
 		<NDropdown :show="showContextMenu" :x="x" :y="y" :on-clickoutside="clickMenuOutside" @select="selectMenu" trigger="manual" :options="menuOptions"></NDropdown>
 	</div>
@@ -69,7 +69,8 @@ const props = defineProps({
 	roomId: {
 		type: String,
 		required: true
-	}
+	},
+	roomName: String
 })
 
 const chatContentList = ref<ChatContentItem[]>([])

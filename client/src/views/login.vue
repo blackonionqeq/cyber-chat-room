@@ -7,7 +7,7 @@
 					<NInput v-model:value="formValue.username" placeholder="请输入用户名"></NInput>
 				</NFormItem>
 				<NFormItem label="密码" path="password">
-					<NInput v-model:value="formValue.password" placeholder="请输入密码" @keydown="e => e.keyCode === 13 && handleLogin()"></NInput>
+					<NInput show-password-on="mousedown" type="password" v-model:value="formValue.password" placeholder="请输入密码" @keydown="e => e.keyCode === 13 && handleLogin()"></NInput>
 				</NFormItem>
 			</NForm>
 			<NButton class="flex-1 leading-loose" @click="handleLogin" type="primary">登录</NButton>

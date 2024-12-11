@@ -1,21 +1,31 @@
 <template>
-	<div class="w-50 flex flex-col">
-		<div>
-			<NButton @click="viewType = 'find-friend'">添加好友</NButton>
-			<NBadge :value="invitationsCount">
-				<NButton @click="checkAndShowInvitations">好友邀请</NButton>
-			</NBadge>
+	<div class="flex">
+		<div class="w-60 flex flex-col my-4 mx-6">
+			<div class="flex justify-between items-center my-4">
+				<!-- <div class="flex justify-between my-4">
+					<div class="i-mdi-light:plus-circle size-4"></div>
+				</div> -->
+				<NButton @click="viewType = 'find-friend'" type="primary">添加好友</NButton>
+				<NBadge :value="invitationsCount">
+					<NButton @click="checkAndShowInvitations" type="info">好友邀请</NButton>
+				</NBadge>
+			</div>
+			<div v-for="friend of contacts" :key="friend.id" class="flex justify-between items-center my-4">
+				<span>{{ friend.username }}</span>
+				<!-- <span>昵称：{{ friend.nickname }}</span> -->
+				<NButton @click="getChatRoomId(friend.id)" type="info">
+					<div class="mr-2">
+						<div class="i-mdi-light:comment size-4"></div>
+					</div>
+					发信息
+				</NButton>
+			</div>
 		</div>
-		<div v-for="friend of contacts" :key="friend.id" class="flex justify-around">
-			<span>用户名：{{ friend.username }}</span>
-			<span>昵称：{{ friend.nickname }}</span>
-			<NButton @click="getChatRoomId(friend.id)">聊天</NButton>
+		<div class="flex-1 h-full w-100 flex mx-4 my-4">
+			<template v-if="viewType === 'find-friend'">
+				<FindFriend></FindFriend>
+			</template>
 		</div>
-	</div>
-	<div class="flex-1 h-full w-full flex">
-		<template v-if="viewType === 'find-friend'">
-			<FindFriend></FindFriend>
-		</template>
 	</div>
 </template>
 
@@ -45,7 +55,7 @@ onMounted(refreshContacts)
 async function getChatRoomId(friendUserId: string) {
 	const chatRoomId = await api.get<any, string>(`/chatroom/new-private-chat/${friendUserId}`)
 	if (typeof chatRoomId === 'string') {
-		router.push(`/home/${chatRoomId}`)
+		router.push(`/home/room/${chatRoomId}`)
 	}
 }
 
