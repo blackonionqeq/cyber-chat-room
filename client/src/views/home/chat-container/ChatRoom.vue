@@ -294,6 +294,7 @@ async function selectMenu(key: string) {
 		// 调接口添加到收藏
 		await api.post(`/favorite/add/${curItem.value!.id}`)
 		message.success('收藏成功')
+		showContextMenu.value = false
 	}
 }
 

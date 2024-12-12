@@ -10,7 +10,8 @@ export class FavoriteService {
 		await this.prismaMongoService.favorite.create({
 			data: {
 				userId: uId, chatContentId: cId,
-				snapshotType: target.type, snapshotContent: target.content
+				snapshotType: target.type, snapshotContent: target.content,
+				fromUserId: target.userId,
 			}
 		})
 		return null

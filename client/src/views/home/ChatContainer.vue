@@ -1,6 +1,6 @@
 <template>
-	<div class="flex h-full">
-		<div class="w-50 flex">
+	<div class="flex h-full ">
+		<div class="w-50 flex bg-[#F5FBFE]">
 			<div v-if="!chatRoomList" class="flex-1 h-dvh flex items-center justify-center">加载中</div>
 			<ChatRoomList v-else :chat-room-list="chatRoomList" :current-room-id="roomId" :latest-chats="latestChats" @select-room-id="selectRoomById"></ChatRoomList>
 		</div>

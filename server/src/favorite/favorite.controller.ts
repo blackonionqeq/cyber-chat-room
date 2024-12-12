@@ -16,7 +16,7 @@ export class FavoriteController {
   async add(@Param('chatContentId') cId: string, @Req() req: Request) {
     return await this.favoriteService.add(cId, req.user.id)
   }
-  @Delete('add/:fId')
+  @Delete(':fId')
   async remove(@Param('fId') fId: string) {
     return await this.favoriteService.remove(fId)
   }

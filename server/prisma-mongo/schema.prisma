@@ -28,6 +28,7 @@ enum ChatContentType {
 model Favorite {
   id String @id @map("_id") @mongo.ObjectId @default(auto())
   chatContentId String
+  fromUserId String
   userId String
   createTime DateTime @default(now())
   updateTime DateTime @updatedAt
