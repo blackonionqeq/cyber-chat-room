@@ -10,10 +10,16 @@
 				</div>
 				<NScrollbar class="absolute inset-0 overflow-y-auto overflow-x-hidden" v-else ref="scrollWrapper" @scroll="debouncedScroll">
 					<div v-for="item of chatContentList" class="flex items-start mt-2 mx-3" :class="item.userId === userInfo.id ? 'justify-start mr-2 flex-row-reverse' : 'justify-start'" @contextmenu="e => {curItem = item; showMenu(e)}" :key="item.id">
-						<!-- <template v-if="item.type === ChatContentType.TEXT"> -->
+						<template v-if="item.type === ChatContentType.TEXT">
 							<UserAvater :user-id="item.userId"></UserAvater>
 							<div class="bg-gray-4 px-3 py-1 rounded-lg mx-2 max-w-[70%]">{{ item.content }}</div>
-						<!-- </template> -->
+						</template>
+						<template v-else-if="item.type === ChatContentType.IMAGE">
+							<UserAvater :user-id="item.userId"></UserAvater>
+							<div class="bg-gray-4 px-3 py-2 rounded-lg mx-2 max-w-[70%]">
+								<img :src="base + item.content" class="object-scale-down w-full h-full" />
+							</div>
+						</template>
 					</div>
 
 					<div class="absolute right-2 bottom-2 text-indigo px-4 py-2 bg-gray-6 rounded-10 cursor-pointer" v-show="showScroll2Bottom" @click="scroll">↓↓{{ unreadCount }}</div>
@@ -21,18 +27,26 @@
 			</div>
 		</div>
 		<div class="h-60 flex flex-col mx-4">
-			<NPopover trigger="click" scrollable class="w-100 max-h-50">
-				<template #trigger>
-					<div class="cursor-pointer w-10">表情</div>
-				</template>
-				<div class="flex flex-wrap">
-					<div v-for="emoji of emojiList" :key="emoji">
-						<span class="size-5 cursor-pointer flex justify-center items-center" @click="addEmoji(emoji)">
-							{{ emoji }}
-						</span>
+			<div class="flex my-2 mx-2">
+				<NPopover trigger="click" scrollable class="w-100 max-h-50">
+					<template #trigger>
+						<!-- <div class="cursor-pointer w-10">表情</div> -->
+						<div class="cursor-pointer">
+							<div class="i-uiw:smile-o size-4 hover:bg-blue"></div>
+						</div>
+					</template>
+					<div class="flex flex-wrap">
+						<div v-for="emoji of emojiList" :key="emoji">
+							<span class="size-5 cursor-pointer flex justify-center items-center" @click="addEmoji(emoji)">
+								{{ emoji }}
+							</span>
+						</div>
 					</div>
+				</NPopover>
+				<div class="ml-3 cursor-pointer" @click="selectThenUpload">
+					<div class="i-uiw:picture size-4 hover:bg-blue"></div>
 				</div>
-			</NPopover>
+			</div>
 			<NInput class="flex-1" type="textarea" placeholder="输入聊天内容后可按Enter键发送" v-model:value="inputValue" @keydown="e => e.keyCode === 13 && (e.preventDefault(), sendMessage(inputValue))"></NInput>
 			<NButton type="info" class="w-20 self-end my-3" @click="sendMessage(inputValue)">发送</NButton>
 		</div>
@@ -54,6 +68,8 @@ import {debounce} from 'throttle-debounce'
 import { emojiList } from '@/utils/emoji-list';
 import UserAvater from '@/components/UserAvater.vue';
 import { ChatContentItem, ChatContentType } from '@/types/chat.d';
+import { selectFile } from '@/utils/select-file';
+
 
 
 // localforage.setDriver(localforage.INDEXEDDB)
@@ -62,6 +78,7 @@ import { ChatContentItem, ChatContentType } from '@/types/chat.d';
 const driver = localforage
 
 const inputValue = ref('')
+const base = import.meta.env.VITE_SERVER
 
 let userInfo: UserInfo
 
@@ -105,7 +122,7 @@ async function handleReceiveMessage(data: {
 		userId: data.userId,
 		content: (data.message.content),
 		id: data.id ?? randomStr(),
-		type: ChatContentType.TEXT,
+		type: data.message.type,
 		updateTime: data.updateTime,
 		createTime: data.createTime,
 		roomId: data.roomId,
@@ -156,14 +173,14 @@ onUnmounted(() => {
 	if (socket) socket = null
 })
 
-async function sendMessage(value: string) {
+async function sendMessage(value: string, type = ChatContentType.TEXT) {
 	if (!value) message.warning('请输入内容再发送')
 	if (socket) {
 		socket.emit('send', {
 			userId: userInfo.id,
 			roomId: props.roomId,
 			message: {
-				type: ChatContentType.TEXT,
+				type,
 				content: value,
 			}
 		})
@@ -277,6 +294,33 @@ async function selectMenu(key: string) {
 		// 调接口添加到收藏
 		await api.post(`/favorite/add/${curItem.value!.id}`)
 		message.success('收藏成功')
+	}
+}
+
+
+// 选择图片和上传相关
+async function selectThenUpload() {
+	const file = await selectFile()
+	if (file) {
+		const formData = new FormData
+		formData.append('file', file)
+		// 上传，获得文件url
+		const res = await api.post('/user/upload', formData, {
+			headers: {
+				"Content-Type": 'multipart/form-data',
+			}
+		})
+		// http://localhost:3000/uploads/1733936218150-a8f02f64-e959-4e0b-ac04-f0efd7b552dc.png
+		console.log(res)
+
+		// 发送信息（图片类型：文件url+类型识别符）
+		sendMessage(res as unknown as string, ChatContentType.IMAGE)
+	}
+}
+function scrollAfterOnLoadImage() {
+	const shouldScroll = checkIsAtBottom()
+	if (shouldScroll) {
+		scroll()
 	}
 }
 </script>

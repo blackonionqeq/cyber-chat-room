@@ -7,10 +7,10 @@ export enum ChatContentType {
 }
 
 export type ChatContentItem = {
-	id:      String
-	roomId:  String
-	userId:  String
-	content: String
+	id:      string
+	roomId:  string
+	userId:  string
+	content: string
 	type:    ChatContentType
 	// createTime: string
 	updateTime: string

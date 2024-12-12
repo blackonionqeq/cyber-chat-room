@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { NButton } from 'naive-ui';
-import { message } from './composables/useDiscreteApi';
+// import { NButton } from 'naive-ui';
+// import { message } from './composables/useDiscreteApi';
 
-async function testMessage() {
-  message.success('这是message！！')
-}
+// async function testMessage() {
+//   message.success('这是message！！')
+// }
 </script>
 
 <template>

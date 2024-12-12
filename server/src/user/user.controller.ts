@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req,  } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req, UseInterceptors, UploadedFile, BadRequestException,  } from '@nestjs/common';
 import { UserService } from './user.service';
 // import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,6 +6,9 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RequireLogin } from 'src/utils/decorator';
 import { Request } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as path from 'node:path'
+import { storage } from 'src/utils/storage-config'
 
 @Controller('user')
 export class UserController {
@@ -60,5 +63,29 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
+  }
+
+  
+  @Post('upload')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      dest: 'uploads',
+      limits: {
+        fileSize: 2 ** 20 * 3,
+      },
+      storage,
+      fileFilter(req, file, callback) {
+        const extname = path.extname(file.originalname)
+        if (['.png', '.jpg', '.jpeg', '.gif'].includes(extname)) {
+          callback(null, true)
+        } else {
+          callback(new BadRequestException('只能上传图片'), false)
+        }
+      },
+    }),
+  )
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    console.log('file', file)
+    return file.path
   }
 }

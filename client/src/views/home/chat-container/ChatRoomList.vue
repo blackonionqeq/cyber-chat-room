@@ -11,7 +11,14 @@
 						<UserAvater :user-id="item.userId!" size="large"></UserAvater>
 						<div class="flex-col flex ml-2 w-full" v-if="!item.groupChat">
 							{{ item.name }}
-							<span class="truncate">{{ latestChats[idx]?.content }}</span>
+							<span class="truncate">
+								<template v-if="latestChats[idx]?.type === 'TEXT'">
+									{{ latestChats[idx]?.content }}
+								</template>
+								<template v-else-if="latestChats[idx]?.type === 'IMAGE'">
+									[图片]
+								</template>
+							</span>
 						</div>
 						<div>{{ getTime(latestChats[idx]?.updateTime) }}</div>
 					</div>
@@ -28,7 +35,6 @@ import type { ChatRoomItem } from '../ChatContainer.vue';
 import UserAvater from '@/components/UserAvater.vue';
 import { ChatContentItem } from '@/types/chat';
 import dayjs from 'dayjs';
-import { largerSize } from 'naive-ui/es/_utils';
 
 defineProps({
 	chatRoomList: {

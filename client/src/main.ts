@@ -11,6 +11,7 @@ createApp(App)
 	.use(router)
 
 app.config.errorHandler = (err, vm, info) => {
+	console.log(err, vm, info)
 	// @ts-ignore
 	if (err.message.includes('401')) {
 		vm?.$router.push({ path: '/login', query: {

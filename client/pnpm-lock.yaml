@@ -39,6 +39,9 @@ importers:
       '@iconify-json/mdi-light':
         specifier: ^1.2.1
         version: 1.2.1
+      '@iconify-json/uiw':
+        specifier: ^1.2.1
+        version: 1.2.1
       '@types/node':
         specifier: ^22.7.9
         version: 22.7.9
@@ -494,6 +497,9 @@ packages:
 
   '@iconify-json/mdi-light@1.2.1':
     resolution: {integrity: sha512-kTs9efbpF5GDcevR9PWCDJQrV1Vfr6RS8KJyGIPM6zxd8AGGAtNCxyACrJ+zeq6K99ZmcTIPr8tlymmPFAxwnw==}
+
+  '@iconify-json/uiw@1.2.1':
+    resolution: {integrity: sha512-q1FyY9N2hkKeisjkHYVoSLv8E9Gg5oHxcVo4VPy4EY7e0RVJAH93dnHyCkTcU4OXp8ExZcgzuevcdldnLQBFjA==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -1736,6 +1742,10 @@ snapshots:
     optional: true
 
   '@iconify-json/mdi-light@1.2.1':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/uiw@1.2.1':
     dependencies:
       '@iconify/types': 2.0.0
 
