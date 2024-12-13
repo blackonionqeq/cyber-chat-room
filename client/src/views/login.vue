@@ -1,6 +1,6 @@
 <template>
 	<div class="flex flex-col max-w-300">
-		<h1>登录页</h1>
+		<h1 class="w-full flex justify-center">登录页</h1>
 		<div class="flex flex-col">
 			<NForm ref="formRef" :model="formValue" :rules label-placement="left" :label-width="80">
 				<NFormItem label="用户名" path="username">

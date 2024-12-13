@@ -8,7 +8,7 @@
 				<div class="ml-3 flex-1 w-full flex items-center justify-center" v-if="!chatContentList.length">
 					暂无聊天
 				</div>
-				<NScrollbar class="absolute inset-0 overflow-y-auto overflow-x-hidden" v-else ref="scrollWrapper" @scroll="debouncedScroll">
+				<NScrollbar class="absolute inset-0 overflow-x-hidden" v-else ref="scrollWrapper" @scroll="debouncedScroll">
 					<div v-for="item of chatContentList" class="flex items-start mt-2 mx-3" :class="item.userId === userInfo.id ? 'justify-start mr-2 flex-row-reverse' : 'justify-start'" @contextmenu="e => {curItem = item; showMenu(e)}" :key="item.id">
 						<template v-if="item.type === ChatContentType.TEXT">
 							<UserAvater :user-id="item.userId"></UserAvater>

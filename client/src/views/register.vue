@@ -1,8 +1,8 @@
 <template>
 	<div class="flex flex-col max-w-300">
-		<h1>登录页</h1>
+		<h1 class="w-full flex justify-center">注册</h1>
 		<div class="flex flex-col">
-			<NForm ref="formRef" :model="formValue" :rules label-placement="left" :label-width="80">
+			<NForm ref="formRef" :model="formValue" :rules label-placement="left" :label-width="100">
 				<NFormItem label="用户名" path="username">
 					<NInput v-model:value="formValue.username" placeholder="请输入用户名"></NInput>
 				</NFormItem>
@@ -25,7 +25,7 @@
 					<NInput v-model:value="formValue.captcha" placeholder="请输入验证码" @keydown="e => e.keyCode === 13 && handleRegister()"></NInput>
 				</NFormItem>
 			</NForm>
-			<NButton class="flex-1 leading-loose" @click="handleRegister" type="primary">注册</NButton>
+			<NButton class="flex-1 leading-[34px] h-[34px]" @click="handleRegister" type="primary">注册</NButton>
 		</div>
 	</div>
 </template>

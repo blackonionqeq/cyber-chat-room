@@ -1,16 +1,16 @@
 <template>
-	<ul class="flex flex-col overflow-y-auto overflow-x-hidden h-full w-full my-0">
+	<ul class="flex flex-col overflow-y-auto overflow-x-hidden h-full flex-1 my-0">
 		<div v-if="!chatRoomList" class="flex-1 w-full">加载中</div>
-		<div v-else class="flex-1 w-full">
-			<li v-for="(item, idx) of chatRoomList" :key="item.id" class="leading-loose p-2" :class="
+		<div v-else class="flex-1 flex-1 overflow-hidden">
+			<li v-for="(item, idx) of chatRoomList" :key="item.id" class="leading-loose p-2 overflow-hidden w-full box-border" :class="
 				currentRoomId === item.id ? 'bg-blue-2' : 'cursor-pointer'
 			" @click="selectRoom(item)">
-				<NBadge :value="item.unread === 0 ? undefined : item.unread" class="w-full">
 					<!-- {{ item.name }} -->
-					<div v-if="!item.groupChat" class="flex justify-between w-[85%]">
+					<div v-if="!item.groupChat" class="flex justify-between overflow-hidden">
 						<UserAvater :user-id="item.userId!" size="large"></UserAvater>
-						<div class="flex-col flex ml-2 w-full" v-if="!item.groupChat">
+						<div class="flex-col flex ml-2 flex-1 overflow-auto" v-if="!item.groupChat">
 							{{ item.name }}
+							
 							<span class="truncate">
 								<template v-if="latestChats[idx]?.type === 'TEXT'">
 									{{ latestChats[idx]?.content }}
@@ -19,10 +19,13 @@
 									[图片]
 								</template>
 							</span>
+							
 						</div>
-						<div>{{ getTime(latestChats[idx]?.updateTime) }}</div>
+						<div class="flex-col flex justify-between mb-2 flex-shrink-0">
+							<div class="text-[12px] text-gray">{{ getTime(latestChats[idx]?.updateTime) }}</div>
+							<NBadge :value="item.unread === 0 ? undefined : item.unread" class="overflow-hidden"></NBadge>
+						</div>
 					</div>
-				</NBadge>
 			</li>
 		</div>
 		<!-- <li></li> -->

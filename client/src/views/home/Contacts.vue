@@ -1,6 +1,6 @@
 <template>
-	<div class="flex">
-		<div class="w-60 flex flex-col my-4 mx-6">
+	<div class="flex h-full">
+		<div class="w-60 flex flex-col py-4 px-6 h-full bg-[#F5FBFE]">
 			<div class="flex justify-between items-center my-4">
 				<!-- <div class="flex justify-between my-4">
 					<div class="i-mdi-light:plus-circle size-4"></div>

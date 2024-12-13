@@ -44,7 +44,7 @@ let timers: ReturnType<typeof setInterval>[] = []
 let dateTimes: string[] = []
 const latestChats = ref<ChatContentItem[]>([])
 watch(() => chatRoomList.value, async (newList, oldList) => {
-	console.log(newList, oldList)
+	// console.log(newList, oldList)
 	if (timers.length) {
 		// @ts-ignore
 		timers.forEach(i => window.clearInterval(i))
