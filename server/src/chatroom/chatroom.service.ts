@@ -47,13 +47,15 @@ export class ChatroomService {
 	async list(id: string) {
 		const roomIds = (await this.prismaService.userChatRoom.findMany({
 			where: { OR: [ { userId: id, }, { userId2: id} ] },
-			select: { roomId: true }
+			select: { roomId: true },
 		})).map(i => i.roomId)
 		let roomInfos = await Promise.all(
 			roomIds.map(async roomId => await this.prismaService.chatRoom.findUnique({
 				where: { id: roomId },
 			}))
 		)
+		// 按更新时间倒序排列
+		roomInfos.sort((a, b) => a.updateTime > b.updateTime ? -1 : 1)
 		roomInfos = await Promise.all(
 			roomInfos.map(async roomInfo => {
 				// 如果是群聊，直接返回信息即可
